@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Динамическая нагрузка CPU</title>
+  <style>
+    body { font-family: sans-serif; }
+    .cpu-data { font-size: 24px; color: #333; }
+  </style>
+</head>
+<body>
+  <h1>Текущая нагрузка CPU</h1>
+  <div class="cpu-data" id="cpu-usage">Загрузка...</div>
+
+  <script>
+    function updateCPU() {
+      fetch('/cpu')
+        .then(response => {
+          if (!response.ok) throw new Error("Ошибка загрузки");
+          return response.json();
+        })
+        .then(data => {
+          document.getElementById('cpu-usage').textContent = data.cpu_usage + '%';
+        })
+        .catch(error => {
+          console.error("Ошибка:", error);
+          document.getElementById('cpu-usage').textContent = "Ошибка";
+        });
+    }
+
+    // Обновляем данные сразу и затем каждую секунду
+    updateCPU();
+    setInterval(updateCPU, 1000);
+  </script>
+</body>
+</html>

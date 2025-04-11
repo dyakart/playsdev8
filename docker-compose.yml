@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  # --------------------------
+  # 1) nginx-main
+  # --------------------------
+  nginx-main:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nginx-main
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/html:/usr/share/nginx/html
+      # Если будут сертификаты:
+      # - ./certs:/etc/nginx/certs
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - apache-php
+      - nginx-red
+      - nginx-blue
+      - cpu-service
+    restart: always
+
+  # --------------------------
+  # 2) apache-php
+  # --------------------------
+  apache-php:
+    build:
+      context: .
+      dockerfile: Dockerfile.apache
+    container_name: apache-php
+    volumes:
+      - ./nginx/html/info.php:/var/www/html/info.php
+    restart: always
+
+  # --------------------------
+  # 3) nginx-red
+  # --------------------------
+  nginx-red:
+    image: nginx:latest
+    container_name: nginx-red
+    # Отдаёт красную страницу
+    volumes:
+      - ./nginx/red:/usr/share/nginx/html
+    restart: always
+
+  # --------------------------
+  # 4) nginx-blue
+  # --------------------------
+  nginx-blue:
+    image: nginx:latest
+    container_name: nginx-blue
+    # Отдаёт синюю страницу
+    volumes:
+      - ./nginx/blue:/usr/share/nginx/html
+    restart: always
+
+  cpu-service:
+    build:
+      context: ./cpu_server
+      dockerfile: Dockerfile
+    container_name: cpu-service
+    expose:
+      - "9000"
+    restart: always
+
+  nginx-secondpage:
+    image: nginx:latest
+    container_name: nginx-secondpage
+    volumes:
+      - ./nginx_secondpage/conf.d:/etc/nginx/conf.d
+      - ./nginx_secondpage/html:/usr/share/nginx/html
+    ports:
+      - "8081:80"
+    restart: always

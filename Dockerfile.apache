@@ -1,0 +1,12 @@
+FROM php:8.2-apache
+
+# Копируем наш конфигурационный файл с MIME-типами в каталог конфигураций,
+# который Apache автоматически подключает
+COPY php_mime.conf /etc/apache2/conf-available/php_mime.conf
+
+# Включаем этот конфиг
+RUN a2enconf php_mime
+
+# Перезапустим Apache (это можно и не делать, поскольку контейнер запускается с Apache в foreground,
+# но данная команда гарантирует, что конфиг активирован во время сборки)
+RUN service apache2 restart

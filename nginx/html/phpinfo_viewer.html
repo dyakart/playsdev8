@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>PHP Info Viewer</title>
+  <style>
+    /* Стили по желанию */
+    #phpinfo {
+      border: 1px solid #ccc;
+      padding: 10px;
+      max-width: 100%;
+      overflow: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Информация о PHP-сервере</h1>
+  <div id="phpinfo">Загрузка...</div>
+  <script>
+    // Выполняем запрос к info.php через fetch
+    fetch('/info.php')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Ошибка при получении информации о PHP");
+        }
+        return response.text();
+      })
+      .then(html => {
+        // Вставляем полученный HTML в контейнер
+        document.getElementById('phpinfo').innerHTML = html;
+      })
+      .catch(error => {
+        document.getElementById('phpinfo').textContent = "Произошла ошибка: " + error;
+        console.error(error);
+      });
+  </script>
+</body>
+</html>
