@@ -14,6 +14,8 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./nginx/html:/usr/share/nginx/html
       - /etc/letsencrypt:/etc/letsencrypt:ro
+      # Монтируем каталог логов Nginx, чтобы иметь к ним доступ с хоста
+      - ./nginx/logs:/var/log/nginx
     ports:
       - "80:80"
       - "443:443"
